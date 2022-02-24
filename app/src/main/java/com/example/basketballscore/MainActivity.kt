@@ -3,27 +3,42 @@ package com.example.basketballscore
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.example.basketballscore.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
-    private var localScore = 0
-    private var visitorScore = 0
+
     private lateinit var binding: ActivityMainBinding
+    private lateinit var viewModel:MainViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        viewModel=ViewModelProvider(this).get(MainViewModel::class.java)
+
+        viewModel.localScore.observe(this, Observer {
+            localScoreValue ->
+            binding.localScoreText.text=localScoreValue.toString()
+
+        })
+
+        viewModel.visitorScore.observe(this, Observer {
+                visitorScoreValue ->
+            binding.localScoreText.text=visitorScoreValue.toString()
+
+        })
+
         setupButtons()
     }
 
     private fun setupButtons() {
         binding.localMinusButton.setOnClickListener {
-            if (localScore > 0) {
-                localScore--
-                binding.localScoreText.text = localScore.toString()
-            }
+        viewModel.decreaseLocalScore()
+
         }
 
         binding.localPlusButton.setOnClickListener {
@@ -35,10 +50,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.visitorMinusButton.setOnClickListener {
-            if (visitorScore > 0) {
-                visitorScore--
-                binding.visitorScoreText.text = visitorScore.toString()
-            }
+           viewModel.decreaseVisitorScore()
+
         }
 
         binding.visitorPlusButton.setOnClickListener {
@@ -50,7 +63,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.restartButton.setOnClickListener {
-            resetScores()
+            viewModel.resetScores()
+
         }
 
         binding.resultsButton.setOnClickListener {
@@ -58,27 +72,16 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun resetScores() {
-        localScore = 0
-        visitorScore = 0
-        binding.visitorScoreText.text = localScore.toString()
-        binding.localScoreText.text = visitorScore.toString()
-    }
+
 
     private fun addPointsToScore(points: Int, isLocal: Boolean) {
-        if (isLocal) {
-            localScore += points
-            binding.localScoreText.text = localScore.toString()
-        } else {
-            visitorScore += points
-            binding.visitorScoreText.text = visitorScore.toString()
-        }
+        viewModel.addPointsToScore(points, isLocal)
     }
 
     private fun startScoreActivity() {
         val intent = Intent(this, ScoreActivity::class.java)
-        intent.putExtra(ScoreActivity.LOCAL_SCORE_KEY, localScore)
-        intent.putExtra(ScoreActivity.VISITOR_SCORE_KEY, visitorScore)
+        intent.putExtra(ScoreActivity.LOCAL_SCORE_KEY, viewModel.localScore.value)
+        intent.putExtra(ScoreActivity.VISITOR_SCORE_KEY, viewModel.visitorScore.value)
         startActivity(intent)
     }
 }
