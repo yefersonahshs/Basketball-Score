@@ -4,7 +4,6 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.basketballscore.databinding.ActivityMainBinding
 
@@ -20,68 +19,76 @@ class MainActivity : AppCompatActivity() {
 
         viewModel=ViewModelProvider(this).get(MainViewModel::class.java)
 
-        viewModel.localScore.observe(this, Observer {
+        binding.mainViewModel=viewModel
+
+        viewModel.localScoreLiveData.observe(this, Observer {
             localScoreValue ->
             binding.localScoreText.text=localScoreValue.toString()
 
         })
 
-        viewModel.visitorScore.observe(this, Observer {
+        viewModel.visitorScoreLiveData.observe(this, Observer {
                 visitorScoreValue ->
-            binding.localScoreText.text=visitorScoreValue.toString()
+            binding.visitorScoreText.text=visitorScoreValue.toString()
 
         })
+
+
+        //viewModel.visitorScore.value=80 no se puede porque esta encapsulado
+
+
 
         setupButtons()
     }
 
     private fun setupButtons() {
-        binding.localMinusButton.setOnClickListener {
-        viewModel.decreaseLocalScore()
+/*     binding.localMinusButton.setOnClickListener {
+    viewModel.decreaseLocalScore()
 
-        }
-
-        binding.localPlusButton.setOnClickListener {
-            addPointsToScore(1, isLocal = true)
-        }
-
-        binding.localTwoPointsButton.setOnClickListener {
-            addPointsToScore(2, isLocal = true)
-        }
-
-        binding.visitorMinusButton.setOnClickListener {
-           viewModel.decreaseVisitorScore()
-
-        }
-
-        binding.visitorPlusButton.setOnClickListener {
-            addPointsToScore(1, isLocal = false)
-        }
-
-        binding.visitorTwoPointsButton.setOnClickListener {
-            addPointsToScore(2, isLocal = false)
-        }
-
-        binding.restartButton.setOnClickListener {
-            viewModel.resetScores()
-
-        }
-
-        binding.resultsButton.setOnClickListener {
-            startScoreActivity()
-        }
     }
 
-
-
-    private fun addPointsToScore(points: Int, isLocal: Boolean) {
-        viewModel.addPointsToScore(points, isLocal)
+    bind.localPlusButton.setOnClickListener {
+        addPointsToScore(1, isLocal = true)
     }
 
-    private fun startScoreActivity() {
-        val intent = Intent(this, ScoreActivity::class.java)
-        intent.putExtra(ScoreActivity.LOCAL_SCORE_KEY, viewModel.localScore.value)
-        intent.putExtra(ScoreActivity.VISITOR_SCORE_KEY, viewModel.visitorScore.value)
-        startActivity(intent)
+    binding.localTwoPointsButton.setOnClickListener {
+        addPointsToScore(2, isLocal = true)
     }
+
+    binding.visitorMinusButton.setOnClickListener {
+       viewModel.decreaseVisitorScore()
+
+    }
+
+    binding.visitorPlusButton.setOnClickListener {
+        addPointsToScore(1, isLocal = false)
+    }
+
+    binding.visitorTwoPointsButton.setOnClickListener {
+        addPointsToScore(2, isLocal = false)
+    }
+
+    binding.restartButton.setOnClickListener {
+        viewModel.resetScores()
+
+    }
+*/
+    binding.resultsButton.setOnClickListener {
+        startScoreActivity()
+    }
+}
+
+
+/*
+private fun addPointsToScore(points: Int, isLocal: Boolean) {
+    viewModel.addPointsToScore(points, isLocal)
+}
+*/
+
+private fun startScoreActivity() {
+    val intent = Intent(this, ScoreActivity::class.java)
+    intent.putExtra(ScoreActivity.LOCAL_SCORE_KEY, viewModel.localScoreLiveData.value)
+    intent.putExtra(ScoreActivity.VISITOR_SCORE_KEY, viewModel.visitorScoreLiveData.value)
+    startActivity(intent)
+}
 }

@@ -1,39 +1,45 @@
 package com.example.basketballscore
 
-import android.content.Intent
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
 class MainViewModel:ViewModel() {
-     var localScore:MutableLiveData<Int> = MutableLiveData()
-     var visitorScore:MutableLiveData<Int> = MutableLiveData()
+     private var _localScoreLiveData:MutableLiveData<Int> = MutableLiveData()
+     private  var _visitorScoreLiveData:MutableLiveData<Int> = MutableLiveData()
+
+     val localScoreLiveData:LiveData<Int>
+     get() = _localScoreLiveData
+
+    val visitorScoreLiveData:LiveData<Int>
+        get() = _visitorScoreLiveData
 
     init {
         resetScores()
     }
 
     fun resetScores() {
-        localScore.value = 0
-        visitorScore.value = 0
+        _localScoreLiveData.value = 0
+        _visitorScoreLiveData.value = 0
     }
 
-    fun addPointsToScore(points: Int, isLocal: Boolean) {
-        if (isLocal) {
-            localScore.value =localScore.value?.plus(points)
-        } else {
-            visitorScore.value = localScore.value!!+points
-        }
+    fun addPointsToLocal(points: Int) {
+        _localScoreLiveData.value = _localScoreLiveData.value?.plus(points)
+    }
+
+    fun addPointsToVisitor(points: Int) {
+        _visitorScoreLiveData.value = _visitorScoreLiveData.value?.plus(points)
     }
 
     fun decreaseLocalScore(){
-        if (localScore.value!!>0){
-            localScore.value=localScore.value?.minus(1)
+        if (_localScoreLiveData.value!!>0){
+            _localScoreLiveData.value=_localScoreLiveData.value?.minus(1)
 
         }
     }
     fun decreaseVisitorScore(){
-        if (visitorScore.value!!>0){
-            visitorScore.value=localScore.value?.minus(1)
+        if (_visitorScoreLiveData.value!!>0){
+            _visitorScoreLiveData.value=_localScoreLiveData.value?.minus(1)
         }
 
     }
